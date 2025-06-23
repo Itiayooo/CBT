@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CBT | Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: #F1F5F9;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .holder {
+            background: #FFFFFF;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            border: 1px solid #CBD5E1;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(30, 58, 138, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            color: #1E3A8A;
+            margin-bottom: 15px;
+        }
+
+        #percentage {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0F172A;
+        }
+
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="holder">
+        <button onclick="logout()"
+            style="margin-top: 20px; padding: 10px 20px; background: #1E3A8A; color: white; border: none; border-radius: 8px; cursor: pointer;">Logout</button>
+        <h1>Your Score</h1>
+        <div id="percentage">Loading...</div>
+        <canvas id="scoreChart" width="200" height="200"></canvas>
+    </div>
+
+    <script>
+        let questions = JSON.parse(localStorage.getItem('CBTQuestionBank')) || [];
+        let answers = JSON.parse(localStorage.getItem('UserAnswers')) || [];
+
+        let correct = 0;
+
+        for (let i = 0; i < questions.length; i++) {
+            let correctAnswer = questions[i].CBTanswer;
+            let selectedOption = answers[i];
+
+            if (selectedOption) {
+                // Match the value A-D to index 0-3
+                let index = { A: 0, B: 1, C: 2, D: 3 }[selectedOption];
+                if (questions[i].CBToptions[index] === correctAnswer) {
+                    correct++;
+                }
+            }
+        }
+
+        let percentage = questions.length ? Math.round((correct / questions.length) * 100) : 0;
+        document.getElementById('percentage').textContent = percentage + "%";
+
+        // Show pie chart
+        const ctx = document.getElementById('scoreChart');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Correct', 'Wrong'],
+                datasets: [{
+                    data: [correct, questions.length - correct],
+                    backgroundColor: ['#10B981', '#EF4444'],
+                }]
+            },
+            options: {
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        function logout() {            
+            window.location.href = 'Login.html';
+        }
+    </script>
+</body>
+
+</html>

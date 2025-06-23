@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CBT | Answer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #F1F5F9;
+            color: #0F172A;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .holder {
+            background: #FFFFFF;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            border: 1px solid #CBD5E1;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 4px 8px rgba(30, 58, 138, 0.1);
+            position: relative;
+        }
+
+        .logout-button {
+            position: absolute;
+            right: 0;
+            top: -8px;
+        }
+
+        #welcomeDiv {
+            font-size: 1.0rem;
+            color: #1E3A8A;
+            text-align: left;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            text-align: center;
+            color: #1E3A8A;
+        }
+
+        #question {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            padding: 8px;
+            border: 1px solid #CBD5E1;
+            border-radius: 8px;
+            background: #F8FAFC;
+            cursor: pointer;
+        }
+
+        input {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #94A3B8;
+            font-size: 1rem;
+            background: #F8FAFC;
+            color: #0F172A;
+            transition: border 0.2s ease;
+        }
+
+        input:focus {
+            border: 1px solid #3B82F6;
+            outline: none;
+            background: #FFFFFF;
+        }
+
+        input[type="radio"] {
+            accent-color: #1E3A8A;
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #1E3A8A;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        button:disabled {
+            background: #CBD5E1;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="holder">
+
+        <button onclick="logout()"
+            style="width: fit-content ; background: #1E3A8A; color: white; border: none; border-radius: 50%; cursor: pointer;"
+            class="logout-button">Logout</button>
+
+        <h1 id="welcomeDiv">Welcome </h1>
+
+        <h1>Answer Questions</h1>
+        <div id="question">Loading question...</div>
+
+        <label class="option"><input type="radio" name="answer" value="A"> <span id="labelA"></span></label>
+        <label class="option"><input type="radio" name="answer" value="B"> <span id="labelB"></span></label>
+        <label class="option"><input type="radio" name="answer" value="C"> <span id="labelC"></span></label>
+        <label class="option"><input type="radio" name="answer" value="D"> <span id="labelD"></span></label>
+
+        <div class="btn-group">
+            <button id="prevBtn" onclick="showPrev()">Previous</button>
+            <button id="nextBtn" onclick="showNext()">Next</button>
+        </div>
+
+        <button onclick="submitAnswers()">Submit</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let welcomeDiv = document.getElementById('welcomeDiv')
+
+        let questionDisplay = document.getElementById('question');
+        let labelA = document.getElementById('labelA');
+        let labelB = document.getElementById('labelB');
+        let labelC = document.getElementById('labelC');
+        let labelD = document.getElementById('labelD');
+        let prevBtn = document.getElementById('prevBtn');
+        let nextBtn = document.getElementById('nextBtn');
+
+        let allQuestions = JSON.parse(localStorage.getItem('CBTQuestionBank')) || [];
+        let currentIndex = 0;
+        let userAnswers = new Array(allQuestions.length).fill(null);
+
+        let users = JSON.parse(localStorage.getItem('CBTallUsers')) || [];
+        let existingUser = users.find(user => user.CBTuserName);
+
+
+        welcomeDiv.innerHTML = `Welcome ${existingUser.CBTuserName}`
+
+        function displayName() {
+
+        }
+
+        function showQuestion(index) {
+            let current = allQuestions[index];
+            questionDisplay.innerHTML = current.CBTquestion;
+
+            labelA.innerHTML = current.CBToptions[0];
+            labelB.innerHTML = current.CBToptions[1];
+            labelC.innerHTML = current.CBToptions[2];
+            labelD.innerHTML = current.CBToptions[3];
+
+            // Clear and restore previous selection
+            let radios = document.getElementsByName('answer');
+            radios.forEach(r => {
+                r.checked = false;
+                if (userAnswers[currentIndex] === r.value) {
+                    r.checked = true;
+                }
+            });
+
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = (index === allQuestions.length - 1);
+        }
+
+        function showNext() {
+            saveAnswer();
+            if (currentIndex < allQuestions.length - 1) {
+                currentIndex++;
+                showQuestion(currentIndex);
+            }
+        }
+
+        function showPrev() {
+            saveAnswer();
+            if (currentIndex > 0) {
+                currentIndex--;
+                showQuestion(currentIndex);
+            }
+        }
+
+        function saveAnswer() {
+            let radios = document.getElementsByName('answer');
+            radios.forEach(r => {
+                if (r.checked) {
+                    userAnswers[currentIndex] = r.value;
+                }
+            });
+        }
+
+        function submitAnswers() {
+            saveAnswer();
+            localStorage.setItem("UserAnswers", JSON.stringify(userAnswers));
+
+            const viewBtn = document.createElement("button");
+            viewBtn.innerHTML = "View Results";
+            viewBtn.style.marginTop = "15px";
+            viewBtn.style.padding = "10px";
+            viewBtn.style.borderRadius = "8px";
+            viewBtn.style.background = "#1E3A8A";
+            viewBtn.style.color = "#fff";
+            viewBtn.style.border = "none";
+            viewBtn.style.fontSize = "1rem";
+            viewBtn.style.cursor = "pointer";
+
+            viewBtn.onclick = function () {
+                window.location.href = "results.html";
+            };
+
+            document.querySelector(".holder").appendChild(viewBtn);
+        }
+
+        if (allQuestions.length > 0) {
+            showQuestion(currentIndex);
+        } else {
+            questionDisplay.innerHTML = "No questions found.";
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
+        }
+
+        function logout() {
+            window.location.href = "Login.html"
+        }
+    </script>
+
+
+</body>
+
+</html>
