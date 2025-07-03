@@ -1,0 +1,187 @@
+<!-- LOGIN PAGE -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CBT | Login</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #F1F5F9;
+      color: #0F172A;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    nav {
+      width: 100%;
+      background: #E2E8F0;
+      padding: 20px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      border-bottom: 1px solid #CBD5E1;
+      position: fixed;
+      top: 0;
+      left: 0;
+      color: #0F172A;
+      z-index: 10;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .holder {
+      background: #FFFFFF;
+      width: 90%;
+      max-width: 400px;
+      padding: 30px;
+      border: 1px solid #CBD5E1;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 8px rgba(30, 58, 138, 0.1);
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #1E3A8A;
+    }
+
+    input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #94A3B8;
+      font-size: 1rem;
+      background: #F8FAFC;
+      color: #0F172A;
+      transition: border 0.2s ease;
+    }
+
+    input:focus {
+      border: 1px solid #3B82F6;
+      outline: none;
+      background: #FFFFFF;
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #1E3A8A;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #3B82F6;
+    }
+
+    #displayHere {
+      margin-top: 10px;
+      font-size: 1rem;
+      text-align: center;
+      color: #EF4444;
+    }
+
+    .password-holder {
+      position: relative;
+      display: flex;
+    }
+
+    #password {
+      width: 100%;
+      position: relative;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="holder">
+    <h1>Login</h1>
+    <input type="text" id="username" placeholder="Enter your username">
+    <input type="password" id="password" placeholder="Enter your password">
+    <button onclick="login(event)">Login</button>
+    <span style="text-align: center;">Don't have an account ? <span onclick="goToSignup()"
+        style="text-decoration: underline; cursor: pointer;">Signup</span></span>
+  </div>
+
+  <script>
+    function login(e) {
+      let button = e.target
+      button.innerHTML = 'Logging in...'
+      button.disabled = true
+
+
+      let userName = document.getElementById('username').value;
+      let password = document.getElementById('password').value;
+
+      let users = JSON.parse(localStorage.getItem('CBTallUsers')) || [];
+      let existingUser = users.find(user => user.CBTuserName === userName);
+
+      setTimeout(() => {
+              if (!userName || !password) {
+        alert('All fields are mandatory');
+        button.innerHTML = 'Login'
+        button.disabled = false
+      } else if (!existingUser) {
+        alert('User does not exist');
+        button.innerHTML = 'Login'
+        button.disabled = false
+      } else if (existingUser.CBTpassword !== password) {
+        alert('Incorrect username or password');
+        button.innerHTML = 'Login'
+        button.disabled = false
+      } else {
+        localStorage.setItem('CBTcurrentUser', JSON.stringify(existingUser));
+        localStorage.setItem("StudentName", existingUser.CBTfirstName);
+
+
+        if (existingUser.role === "Student") {
+          button.innerHTML = 'Login'
+          button.disabled = false
+          setTimeout(() => {
+            window.location.href = "Student.html";
+          }, 1000);
+        } else if (existingUser.role === "Teacher") {
+          button.innerHTML = 'Login'
+          button.disabled = false
+          setTimeout(() => {
+            window.location.href = "Teacher.html";
+          }, 1000);
+        }
+      }
+      }, 1200);
+    }
+
+    function goToSignup() {
+      window.location.href = "index.html"
+    }
+  </script>
+
+
+</body>
+
+</html>

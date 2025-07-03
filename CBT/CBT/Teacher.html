@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CBT | Set Questions</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #F1F5F9;
+      color: #0F172A;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .holder {
+      background: #FFFFFF;
+      width: 90%;
+      max-width: 400px;
+      padding: 30px;
+      border: 1px solid #CBD5E1;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 8px rgba(30, 58, 138, 0.1);
+      position: relative;
+    }
+
+    .logout-button{
+        position: absolute;
+        right: 0;
+        top: -8px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #1E3A8A;
+    }
+
+    input,
+    button {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #94A3B8;
+      font-size: 1rem;
+      background: #F8FAFC;
+      color: #0F172A;
+      transition: 0.3s;
+    }
+
+    button {
+      background: #1E3A8A;
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3B82F6;
+    }
+
+    /* #viewResultsBtn {
+      visibility: hidden;
+    } */
+  </style>
+</head>
+
+<body>
+  <div class="holder">
+    <button onclick="logout()"
+            style="width: fit-content ; background: #1E3A8A; color: white; border: none; border-radius: 50%; cursor: pointer;" class="logout-button">Logout</button>
+    <h1>Set Questions</h1>
+    <input type="text" id="question" placeholder="Enter your question">
+    <input type="text" placeholder="Option A" id="optionA">
+    <input type="text" placeholder="Option B" id="optionB">
+    <input type="text" placeholder="Option C" id="optionC">
+    <input type="text" placeholder="Option D" id="optionD">
+    <input type="text" placeholder="Enter Correct Answer" id="answer">
+    <button onclick="setQuestions()">Set Questions</button>
+    <button onclick="viewStudentResult()">View Students' Results</button>
+  </div>
+
+  <script>
+    let questions = JSON.parse(localStorage.getItem('CBTQuestionBank')) || [];
+
+    function setQuestions() {
+      let question = document.getElementById('question').value.trim();
+      let optionA = document.getElementById('optionA').value.trim();
+      let optionB = document.getElementById('optionB').value.trim();
+      let optionC = document.getElementById('optionC').value.trim();
+      let optionD = document.getElementById('optionD').value.trim();
+      let answer = document.getElementById('answer').value.trim();
+    //   let viewStudentResult = document.getElementById('viewResultsBtn')
+
+      if (![optionA, optionB, optionC, optionD].includes(answer)) {
+        alert('Correct answer should be one of the provided options');
+        return;
+      }
+
+      if (!question || !optionA || !optionB || !optionC || !optionD || !answer) {
+            alert('All Fields are Mandatory')
+      }else{
+            const scheme = {
+        CBTquestion: question,
+        CBToptions: [optionA, optionB, optionC, optionD],
+        CBTanswer: answer
+      };
+
+      questions.push(scheme);
+      localStorage.setItem('CBTQuestionBank', JSON.stringify(questions));
+      alert('Question added successfully!');
+    
+      document.getElementById('question').value = '';
+      document.getElementById('optionA').value = '';
+      document.getElementById('optionB').value = '';
+      document.getElementById('optionC').value = '';
+      document.getElementById('optionD').value = '';
+      document.getElementById('answer').value = '';
+
+    //   document.getElementById("viewResultsBtn").style.visibility = "visible";
+    }
+
+  }
+
+   function viewStudentResult() {
+        window.location.href = "student-result.html";
+    }
+
+    function logout() {
+        window.location.href = "Login.html"
+    }
+
+  </script>
+</body>
+
+</html>

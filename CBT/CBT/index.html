@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CBT | Sign-Up</title>
+  <script src="https://kit.fontawesome.com/08c5df3378.js" crossorigin="anonymous"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #F1F5F9;
+      color: #0F172A;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    nav {
+      width: 100%;
+      background: #E2E8F0;
+      padding: 20px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      border-bottom: 1px solid #CBD5E1;
+      position: fixed;
+      top: 0;
+      left: 0;
+      color: #0F172A;
+      z-index: 10;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .holder {
+      background: #FFFFFF;
+      width: 90%;
+      max-width: 400px;
+      padding: 15px 30px;
+      border: 1px solid #CBD5E1;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 8px rgba(30, 58, 138, 0.1);
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #1E3A8A;
+    }
+
+    input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #94A3B8;
+      font-size: 1rem;
+      background: #F8FAFC;
+      color: #0F172A;
+      transition: border 0.2s ease;
+    }
+
+    input:focus {
+      border: 1px solid #3B82F6;
+      outline: none;
+      background: #FFFFFF;
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #1E3A8A;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #3B82F6;
+    }
+
+    #displayHere {
+      margin-top: 10px;
+      font-size: 1rem;
+      text-align: center;
+      color: #EF4444;
+    }
+
+    .password-holder {
+      position: relative;
+      display: flex;
+    }
+
+    #password {
+      width: 100%;
+      position: relative;
+    }
+
+    .icon-holder {
+      position: absolute;
+      right: 0;
+      height: 100%;
+      width: 15%;
+      /* background-color: transparent; */
+      border: none;
+      background-color: #1E3A8A;
+    }
+
+    .icon-holder i {
+      font-size: 1.2rem;
+      pointer-events: none;
+    }
+
+    .side-text {
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1.1;
+      color: #1E3A8A;
+    }
+
+    #role {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #F8FAFC;
+      border: 1px solid #94A3B8;
+      color: #0F172A;
+    }
+
+    #emailFeedback {
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+      padding-left: 2px;
+      color: #DC2626;
+      display: none;
+    }
+
+    #passwordNote {
+      display: none;
+      font-size: 0.9rem;
+      color: #DC2626;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="holder">
+    <h1>Sign-Up</h1>
+    <div id="displayHere"></div>
+    <input type="text" id="firstName" placeholder="First Name">
+    <input type="text" id="lastName" placeholder="Last Name">
+    <input type="text" id="userName" placeholder="Username">
+    <input type="email" id="email" placeholder="Email address">
+    <small id="emailFeedback"></small>
+    <div class="password-holder">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="iconDisplay()" type="button" class="icon-holder">
+        <div style="display: none;" id="icon-i-holder"><i class="fa-solid fa-eye"></i></div>
+        <div style="display: block;" id="icon-slash-holder"><i class="fa-solid fa-eye-slash"></i></div>
+      </button>
+    </div>
+    <small id="passwordNote" class="note-bad"></small>
+    <input type="password" id="confirmPassword" placeholder="Confirm Password">
+    <select id="role">
+      <option value="">Select Role</option>
+      <option value="Student">Student</option>
+      <option value="Teacher">Teacher</option>
+    </select>
+    <button onclick="createAccount(event)">Create Account</button>
+    <p style="text-align: center;">
+      Already have an account?
+      <span onclick="window.location.href='login.html'"
+        style="cursor: pointer; text-decoration: underline;">Login</span>
+    </p>
+  </div>
+
+  <script>
+    function createAccount(e) {
+      let button = e.target
+      button.innerHTML = "Creating Account..."
+      button.disabled = true
+
+      setTimeout(() => {
+        let firstName = document.getElementById('firstName').value;
+        let lastName = document.getElementById('lastName').value;
+        let userName = document.getElementById('userName').value;
+        let email = document.getElementById('email').value;
+        let password = document.getElementById('password').value;
+        let confirmPassword = document.getElementById('confirmPassword').value;
+        let role = document.getElementById('role');
+
+        let users = JSON.parse(localStorage.getItem('CBTallUsers')) || [];
+        let usernameExists = users.some(user => user.CBTuserName === userName);
+        let emailExists = users.some(user => user.CBTemail === email);
+
+        if (!firstName || !lastName || !userName || !email || !password) {
+          alert('All Fields are Mandatory');
+          button.innerHTML = "Create Account"
+          button.disabled = false
+        } else if (usernameExists) {
+          alert('An account with this username already exists');
+          button.innerHTML = "Create Account"
+          button.disabled = false
+        } else if (emailExists) {
+          alert('An account with this emails address already exists');
+          button.innerHTML = "Create Account"
+          button.disabled = false
+        } else if (password.length < 8) {
+          alert('Password must contain at least 8 characters');
+          button.innerHTML = "Create Account"
+          button.disabled = false
+        } else if (password !== confirmPassword) {
+          alert('Passwords do not match');
+          button.innerHTML = "Create Account"
+          button.disabled = false
+        } else if (!role.value) {
+          alert('Please select a role (Student or Teacher)');
+          button.innerHTML = "Create Account"
+          button.disabled = false
+        } else {
+          // let users = JSON.parse(localStorage.getItem('CBTallUsers')) || [];
+
+
+          const userCredentials = {
+            CBTfirstName: firstName,
+            CBTlastName: lastName,
+            CBTuserName: userName,
+            CBTemail: email,
+            CBTpassword: password,
+            role: role.value
+          };
+
+          users.push(userCredentials);
+          localStorage.setItem('CBTallUsers', JSON.stringify(users));
+          localStorage.setItem('CBTcurrentUserRole', role.value);
+
+          window.location.href = "login.html";
+          alert('Account created successfully')
+          button.innerHTML = "Create Account"
+          button.disabled = false
+        }
+      }, 1000);
+
+    }
+
+    function iconDisplay() {
+      let iconii = document.getElementById('icon-i-holder');
+      let iconi = document.getElementById('icon-slash-holder');
+      let passwordd = document.getElementById('password');
+
+      iconii.style.display = (iconii.style.display === 'none') ? 'block' : 'none';
+      iconi.style.display = (iconi.style.display === 'block') ? 'none' : 'block';
+      passwordd.type = (passwordd.type === 'password') ? 'text' : 'password';
+    }
+  </script>
+</body>
+
+</html>

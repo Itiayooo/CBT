@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Results</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background: #F1F5F9;
+      font-family: 'Segoe UI', sans-serif;
+      color: #0F172A;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .result-card {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(30, 58, 138, 0.05);
+      padding: 20px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #1E3A8A;
+      margin-bottom: 10px;
+    }
+
+    canvas {
+      max-width: 250px;
+      max-height: 250px;
+      margin: auto;
+    }
+
+    .no-results {
+      font-size: 1.2rem;
+      color: #EF4444;
+      margin-top: 100px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Students' Results</h1>
+  <div id="resultsContainer"></div>
+</body>
+</html>
+
+  <script>
+    const answers = JSON.parse(localStorage.getItem("UserAnswers"));
+    const questions = JSON.parse(localStorage.getItem("CBTQuestionBank"));
+    const name = localStorage.getItem("StudentName") || "Unknown Student";
+
+    const container = document.getElementById("resultsContainer");
+
+    if (!answers || answers.length === 0) {
+      container.innerHTML = `<div class="no-results">No results to display</div>`;
+    } else {
+      let score = 0;
+
+      for (let i = 0; i < answers.length; i++) {
+        if (answers[i] && answers[i] === questions[i].CBTanswer[0]) {
+          score++;
+        }
+      }
+
+      let percent = Math.round((score / questions.length) * 100);
+
+      const card = document.createElement("div");
+      card.className = "result-card";
+
+      card.innerHTML = `<h2>${name}</h2><canvas id="resultChart"></canvas>`;
+      container.appendChild(card);
+
+      const ctx = document.getElementById('resultChart');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Score', 'Remaining'],
+          datasets: [{
+            data: [percent, 100 - percent],
+            backgroundColor: ['#3B82F6', '#CBD5E1'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: { enabled: true }
+          }
+        }
+      });
+    }
+  </script>
+
+
